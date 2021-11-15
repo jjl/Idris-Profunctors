@@ -1,6 +1,6 @@
 package profunctors
 
-sourcedir = src
+sourcedir = "src"
 
 modules = Data.Profunctor
         , Data.Profunctor.Cayley
@@ -20,6 +20,4 @@ modules = Data.Profunctor
         , Data.Profunctor.Traversal.Index
         , Data.Verified.Profunctor
 
-pkgs = bifunctors
-
-opts = "-p contrib"
+depends = contrib, comonad

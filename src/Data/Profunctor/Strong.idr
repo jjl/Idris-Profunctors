@@ -5,14 +5,14 @@ import Data.Morphisms
 import Control.Arrow
 
 %default total
-%access public export
 
 -- }}}
 -- Strong
 -- {{{
 
 ||| Generalized UpStar of a Strong Functor
-interface Profunctor p => Strong (p : Type -> Type -> Type) where
+public export
+interface Profunctor p => Strong (0 p : Type -> Type -> Type) where
   ||| Create a new Profunctor of tuples with first element from the original
   |||
   ||| ````idris example
@@ -31,22 +31,27 @@ interface Profunctor p => Strong (p : Type -> Type -> Type) where
   second' : p a b -> p (c, a) (c, b)
   second' = dimap (\x => (snd x, fst x)) (\x => (snd x, fst x)) . first'
 
-implementation Monad m => Strong (Kleislimorphism m) where
+export
+Monad m => Strong (Kleislimorphism m) where
   first'  (Kleisli f) = Kleisli $ \ac => f (fst ac) >>= \b => pure (b, snd ac)
   second' (Kleisli f) = Kleisli $ \ca => f (snd ca) >>= pure . MkPair (fst ca)
 
-implementation Strong Morphism where
+export
+Strong Morphism where
   first'  (Mor f) = Mor $ \(a,c) => (f a, c)
   second' (Mor f) = Mor $ \(c,a) => (c, f a)
 
-implementation Functor m => Strong (UpStarred m) where
+export
+Functor m => Strong (UpStarred m) where
   first'  (UpStar f) = UpStar $ \ac => map (\b' => (b', snd ac)) . f $ fst ac
   second' (UpStar f) = UpStar $ \ca => map (MkPair $    fst ca)  . f $ snd ca
 
-implementation Arrow p => Strong (WrappedArrow p) where
+export
+Arrow p => Strong (WrappedArrow p) where
   first'  = WrapArrow . first  . unwrapArrow
   second' = WrapArrow . second . unwrapArrow
 
-implementation Strong (Forgotten r) where
+export
+Strong (Forgotten r) where
   first'  (Forget k) = Forget $ k . fst
   second' (Forget k) = Forget $ k . snd
